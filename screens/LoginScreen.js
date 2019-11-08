@@ -109,7 +109,7 @@ export default function LoginScreen(props) {
               <Col style={styles.buttonCol}>
                 <Button
                   rounded style={styles.buttonItem}
-                  // disabled={isDisabled}
+                  disabled={isDisabled}
                   onPress={() => signIn()}>
                   <Text style={styles.buttonText}>Next</Text>
                 </Button>

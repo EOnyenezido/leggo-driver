@@ -22,7 +22,7 @@ export default function LoginScreen(props) {
   }
 
   const start = () => {
-    props.navigation.navigate('Login');
+    props.navigation.navigate('Main');
   }
 
   return (
@@ -66,7 +66,7 @@ export default function LoginScreen(props) {
                 <Button
                   rounded style={styles.buttonItem}
                   onPress={() => start()}>
-                  <Text style={styles.buttonText}>Start</Text>
+                  <Text style={styles.buttonText}>Enter</Text>
                 </Button>
               </Col>
             </Row>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   dotImageCol: {
     justifyContent: 'flex-end',
     alignItems: 'center',
-    height: layout.modifier.height(210)
+    height: layout.modifier.height(215)
   },
   topCol: {
     justifyContent: 'flex-end',
@@ -124,20 +124,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     height: layout.modifier.height(105)
-  },
-  pinItem:  {
-    marginLeft: layout.modifier.width(22),
-    marginRight: layout.modifier.width(22),
-  },
-  pinCol: {
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: layout.modifier.height(300)
-  },
-  pinInput: {
-    fontFamily: 'aller',
-    fontSize: 36,
-    textAlign: 'center'
   },
   pinImage: {
     width: layout.modifier.width(1125),

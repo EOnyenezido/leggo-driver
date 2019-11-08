@@ -36,6 +36,8 @@ async function loadResourcesAsync() {
       require('./assets/images/logo.png'),
       require('./assets/images/enter_pin.png'),
       require('./assets/images/f_dot.png'),
+      require('./assets/images/bike.png'),
+      require('./assets/images/l_dot.png'),
     ]),
     Font.loadAsync({
       // This is the font that we are using for our tab bar

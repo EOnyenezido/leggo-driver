@@ -21,8 +21,8 @@ export default function LoginScreen(props) {
     }
   }
 
-  const signIn = () => {
-    props.navigation.navigate('Welcome');
+  const start = () => {
+    props.navigation.navigate('Login');
   }
 
   return (
@@ -38,69 +38,25 @@ export default function LoginScreen(props) {
               </Col>
             </Row>
             <Row>
-              <Col style={styles.midCol}>
-                <Text style={styles.subText}>Enter your PIN code</Text>
+              <Col style={styles.mainCol}>
+                <Text style={styles.mainText}>Welcome, Emeka</Text>
               </Col>
             </Row>
-            <Row style={{marginLeft: layout.modifier.width(142), marginRight: layout.modifier.width(142)}}>
-              <Col style={styles.pinCol}>
-                <Item style={styles.pinItem}>
-                  <Input
-                    style={styles.pinInput}
-                    placeholder="-"
-                    placeholderTextColor={colors.lightGray}
-                    maxLength={1}
-                    onKeyPress={(e) => handlePINchange(2, e)}
-                    keyboardType={'numeric'} />
-                </Item>
-              </Col>
-              <Col style={styles.pinCol}>
-                <Item style={styles.pinItem}>
-                  <Input
-                    style={styles.pinInput}
-                    placeholder="-"
-                    placeholderTextColor={colors.lightGray}
-                    maxLength={1} 
-                    ref={(input) => { this.secondPIN = input }}
-                    onKeyPress={(e) => handlePINchange(3, e)}
-                    keyboardType={'numeric'} />
-                </Item>
-              </Col>
-              <Col style={styles.pinCol}>
-                <Item style={styles.pinItem}>
-                  <Input
-                    style={styles.pinInput}
-                    placeholder="-"
-                    placeholderTextColor={colors.lightGray}
-                    maxLength={1}
-                    ref={(input) => { this.thirdPIN = input }}
-                    onKeyPress={(e) => handlePINchange(4, e)}
-                    keyboardType={'numeric'} />
-                </Item>
-              </Col>
-              <Col style={styles.pinCol}>
-                <Item style={styles.pinItem}>
-                  <Input
-                    style={styles.pinInput}
-                    placeholder="-"
-                    placeholderTextColor={colors.lightGray}
-                    maxLength={1}
-                    ref={(input) => { this.lastPIN = input }}
-                    onKeyPress={(e) => handlePINchange(5, e)}
-                    keyboardType={'numeric'} />
-                </Item>
+            <Row>
+              <Col style={styles.midCol}>
+                <Text style={styles.subText}>Press Enter to start</Text>
               </Col>
             </Row>
             <Row>
               <Col style={styles.pinImageCol}>
-                <Image source={ require('../assets/images/enter_pin.png') }
+                <Image source={ require('../assets/images/bike.png') }
                   style={styles.pinImage}
                 />
               </Col>
             </Row>
             <Row>
               <Col style={styles.dotImageCol}>
-                <Image source={ require('../assets/images/f_dot.png') }
+                <Image source={ require('../assets/images/l_dot.png') }
                   style={styles.dotImage}
                 />
               </Col>
@@ -109,9 +65,8 @@ export default function LoginScreen(props) {
               <Col style={styles.buttonCol}>
                 <Button
                   rounded style={styles.buttonItem}
-                  // disabled={isDisabled}
-                  onPress={() => signIn()}>
-                  <Text style={styles.buttonText}>Next</Text>
+                  onPress={() => start()}>
+                  <Text style={styles.buttonText}>Start</Text>
                 </Button>
               </Col>
             </Row>
@@ -153,17 +108,22 @@ const styles = StyleSheet.create({
   dotImageCol: {
     justifyContent: 'flex-end',
     alignItems: 'center',
-    height: layout.modifier.height(135)
+    height: layout.modifier.height(210)
   },
   topCol: {
     justifyContent: 'flex-end',
     alignItems: 'center',
     height: layout.modifier.height(360)
   },
+  mainCol: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    height: layout.modifier.height(240)
+  },
   midCol: {
     justifyContent: 'flex-end',
     alignItems: 'center',
-    height: layout.modifier.height(220)
+    height: layout.modifier.height(105)
   },
   pinItem:  {
     marginLeft: layout.modifier.width(22),
@@ -180,14 +140,20 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   pinImage: {
-    width: layout.modifier.width(410),
-    height: layout.modifier.height(540),
+    width: layout.modifier.width(1125),
+    height: layout.modifier.height(347),
     resizeMode: 'contain'
   },
   pinImageCol: {
     justifyContent: 'flex-end',
     alignItems: 'center',
-    height: layout.modifier.height(650)
+    height: layout.modifier.height(745)
+  },
+  mainText: {
+    fontFamily: 'aller',
+    fontSize: 24,
+    lineHeight: 25,
+    textAlign: 'center',
   },
   subText: {
     color: colors.gray,

@@ -40,6 +40,10 @@ async function loadResourcesAsync() {
       // We include SpaceMono because we use it in HomeScreen.js. Feel free to
       // remove this if you are not using it in your app
       'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+      'aller': require('./assets/fonts/Aller_Rg.ttf'),
+      'aller-bold': require('./assets/fonts/Aller_Bd.ttf'),
+      'aller-light': require('./assets/fonts/Aller_Lt.ttf'),
+      'aller-display': require('./assets/fonts/AllerDisplay.ttf'),
     }),
   ]);
 }

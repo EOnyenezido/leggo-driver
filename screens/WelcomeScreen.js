@@ -9,17 +9,7 @@ import colors from '../constants/Colors';
 import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
 
-export default function LoginScreen(props) {
-  const [isDisabled, setDisabled] = useState(true);
-
-  const handlePINchange = (number, event) => {
-    if (event.nativeEvent.key !== 'Backspace')  {
-      number === 2 ? this.secondPIN._root.focus() :
-      number === 3 ? this.thirdPIN._root.focus() :
-      number === 4 ? this.lastPIN._root.focus() :
-      number === 5 ? setDisabled(false) : null;
-    }
-  }
+export default function WelcomeScreen(props) {
 
   const start = () => {
     props.navigation.navigate('Main');

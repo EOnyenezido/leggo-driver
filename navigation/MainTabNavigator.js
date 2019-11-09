@@ -1,11 +1,13 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
+import Colors from '../constants/Colors';
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import OrdersScreen from '../screens/OrdersScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -21,13 +23,17 @@ const HomeStack = createStackNavigator(
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
+  tabBarOptions: { 
+    activeTintColor: Colors.yellow,
+    inactiveTintColor: Colors.tabIconDefault,
+  },
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? `ios-home${focused ? '' : '-outline'}`
+          : 'md-home'
       }
     />
   ),
@@ -35,42 +41,80 @@ HomeStack.navigationOptions = {
 
 HomeStack.path = '';
 
-const LinksStack = createStackNavigator(
+const OrdersStack = createStackNavigator(
   {
-    Links: LinksScreen,
+    Orders: OrdersScreen,
   },
   config
 );
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+OrdersStack.navigationOptions = {
+  tabBarLabel: 'Orders',
+  tabBarOptions: { 
+    activeTintColor: Colors.yellow,
+    inactiveTintColor: Colors.tabIconDefault,
+  },
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'} />
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ?
+      `ios-locate${focused ? '' : '-outline'}` : 'md-locate'} />
   ),
 };
 
-LinksStack.path = '';
+OrdersStack.path = '';
 
-const SettingsStack = createStackNavigator(
+const HistoryStack = createStackNavigator(
   {
-    Settings: SettingsScreen,
+    History: HistoryScreen,
   },
   config
 );
 
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
+HistoryStack.navigationOptions = {
+  tabBarLabel: 'History',
+  tabBarOptions: { 
+    activeTintColor: Colors.yellow,
+    inactiveTintColor: Colors.tabIconDefault,
+  },
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'} />
+    <TabBarIcon focused={focused} name={Platform.OS === 'ios' ?
+      `ios-calendar${focused ? '' : '-outline'}` : 'md-calendar'} />
   ),
 };
 
-SettingsStack.path = '';
+HistoryStack.path = '';
+
+const ProfileStack = createStackNavigator(
+  {
+    Profile: ProfileScreen,
+  },
+  config
+);
+
+ProfileStack.navigationOptions = {
+  tabBarLabel: 'Profile',
+  tabBarOptions: { 
+    activeTintColor: Colors.yellow,
+    inactiveTintColor: Colors.tabIconDefault,
+  },
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-contact${focused ? '' : '-outline'}`
+          : 'md-contact'
+      }
+    />
+  ),
+};
+
+ProfileStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
-  LinksStack,
-  SettingsStack,
+  OrdersStack,
+  HistoryStack,
+  ProfileStack,
 });
 
 tabNavigator.path = '';

@@ -8,6 +8,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import RatingScreen from '../screens/RatingScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -110,11 +111,39 @@ ProfileStack.navigationOptions = {
 
 ProfileStack.path = '';
 
+const RatingStack = createStackNavigator(
+  {
+    Rating: RatingScreen,
+  },
+  config
+);
+
+RatingStack.navigationOptions = {
+  tabBarLabel: 'Rating',
+  tabBarOptions: { 
+    activeTintColor: Colors.yellow,
+    inactiveTintColor: Colors.tabIconDefault,
+  },
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-star${focused ? '' : '-outline'}`
+          : 'md-star'
+      }
+    />
+  ),
+};
+
+RatingStack.path = '';
+
 const tabNavigator = createBottomTabNavigator({
   HomeStack,
   OrdersStack,
   HistoryStack,
   ProfileStack,
+  RatingStack,
 });
 
 tabNavigator.path = '';

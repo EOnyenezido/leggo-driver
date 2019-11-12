@@ -79,7 +79,7 @@ export default function HomeScreen(props) {
                   </Row>                
                 </Col>
               </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback onPress={() => props.navigation.navigate('Orders')}>
+              <TouchableWithoutFeedback onPress={() => props.navigation.navigate('Rating')}>
                 <Col style={{...styles.topGrid, borderTopWidth: 0.5, borderTopColor: colors.lightGray,
                   borderLeftWidth: 0.5, borderLeftColor: colors.lightGray}}>                  
                   <Row>

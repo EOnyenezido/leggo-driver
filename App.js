@@ -4,6 +4,7 @@ import * as Font from 'expo-font';
 import React, { useState } from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Root } from "native-base";
 
 import AppNavigator from './navigation/AppNavigator';
 
@@ -20,10 +21,10 @@ export default function App(props) {
     );
   } else {
     return (
-      <View style={styles.container}>
+      <Root>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         <AppNavigator />
-      </View>
+      </Root>
     );
   }
 }
@@ -56,6 +57,7 @@ async function loadResourcesAsync() {
       'aller-bold': require('./assets/fonts/Aller_Bd.ttf'),
       'aller-light': require('./assets/fonts/Aller_Lt.ttf'),
       'aller-display': require('./assets/fonts/AllerDisplay.ttf'),
+      'Roboto_medium': require('./assets/fonts/Aller_Rg.ttf'), // issue with native base
     }),
   ]);
 }

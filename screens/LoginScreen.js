@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { Container, Content, Text, Item, Input, Button, StyleProvider } from 'native-base';
+import { Container, Content, Text, Item, Input, Button, StyleProvider, Toast } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 import layout from '../constants/Layout';
@@ -9,20 +9,48 @@ import colors from '../constants/Colors';
 import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
 
-export default function LoginScreen(props) {
-  const [isDisabled, setDisabled] = useState(true);
+import firebase from '../services/firebase';
 
-  const handlePINchange = (number, event) => {
+export default function LoginScreen(props) {
+  const db = firebase.firestore();
+  const [isDisabled, setDisabled] = useState(true);
+  const [isError, setError] = useState(false);
+  const [pin, setPin] = useState({2: '', 3: '', 4: '', 5: ''});
+
+  const handlePINchange = (number, event) => {    
     if (event.nativeEvent.key !== 'Backspace')  {
       number === 2 ? this.secondPIN._root.focus() :
       number === 3 ? this.thirdPIN._root.focus() :
       number === 4 ? this.lastPIN._root.focus() :
       number === 5 ? setDisabled(false) : null;
+      setPin({...pin, [number]: event.nativeEvent.key});
     }
   }
 
   const signIn = () => {
-    props.navigation.navigate('Welcome');
+    const userPin = Object.values(pin).join('');
+    const userRef = db.collection("drivers").doc(userPin);
+    userRef.get().then(function(doc) {
+      if (doc.exists) {
+          console.log("Document data:", doc.data());
+          //props.navigation.navigate('Welcome');
+      } else {
+          // user account does not exist
+          Toast.show({
+            text: 'Account does not exist. Please contact administrator.',
+            buttonText: 'Close',
+            type: 'danger',
+            duration: 5000
+          })
+      }
+    }).catch(function(error) {
+      Toast.show({
+        text: error,
+        buttonText: 'Close',
+        type: 'danger',
+        duration: 5000
+      })
+    });
   }
 
   return (
@@ -55,7 +83,7 @@ export default function LoginScreen(props) {
                 </Item>
               </Col>
               <Col style={styles.pinCol}>
-                <Item style={styles.pinItem}>
+                <Item style={styles.pinItem} error={isError}>
                   <Input
                     style={styles.pinInput}
                     placeholder="-"

@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, StyleSheet, ProgressBarAndroid, TouchableWithoutFeedback } from 'react-native';
 import { Container, Content, Text, Item, Thumbnail, Button, StyleProvider, Icon } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
 
 import layout from '../constants/Layout';
 import colors from '../constants/Colors';
@@ -9,7 +10,7 @@ import colors from '../constants/Colors';
 import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
 
-export default function ProfileScreen(props) {
+function ProfileScreen(props) {
   return (
     <StyleProvider style={getTheme(platform)}>
       <Container>
@@ -17,17 +18,17 @@ export default function ProfileScreen(props) {
           <Grid>
             <Row>
               <Col style={styles.topCol}>
-                <Thumbnail style={styles.thumbnail} source={ require('../assets/images/profile_picture.png') } />
+                <Thumbnail style={styles.thumbnail} source={ props.userDetails.profileImage ? {uri: props.userDetails.profileImage} : require('../assets/images/profile_picture.png') } />
               </Col>
             </Row>
             <Row>
               <Col style={styles.nameCol}>
-                <Text style={styles.nameText}>Emeka Onyenezido</Text>
+                <Text style={styles.nameText}>{props.userDetails.firstName} {props.userDetails.lastName}</Text>
               </Col>
             </Row>
             <Row>
               <Col style={styles.subCol}>
-                <Text style={styles.subText}>NO: 12345</Text>
+                <Text style={styles.subText}>PIN: {props.userDetails.pin}</Text>
               </Col>
             </Row>
             <Row>
@@ -40,7 +41,7 @@ export default function ProfileScreen(props) {
                 <Text style={styles.detailText}>Mobile</Text>
               </Col>
               <Col style={styles.infoCol}>
-                <Text style={styles.infoText}>07035382411</Text>
+                <Text style={styles.infoText}>{props.userDetails.mobile}</Text>
               </Col>
             </Row>
             <Row>
@@ -53,7 +54,7 @@ export default function ProfileScreen(props) {
                 <Text style={styles.detailText}>Address</Text>
               </Col>
               <Col style={styles.infoCol}>
-                <Text style={styles.infoText}>Oke Ira, Ajah</Text>
+                <Text style={styles.infoText}>{props.userDetails.address}</Text>
               </Col>
             </Row>
             <TouchableWithoutFeedback onPress={() => props.navigation.navigate('Login')}>
@@ -152,3 +153,9 @@ const styles = StyleSheet.create({
     height: layout.modifier.height(175)
   },
 });
+
+const mapStateToProps = state => {
+  return { userDetails: state.userDetails, };
+};
+
+export default connect(mapStateToProps)(ProfileScreen)

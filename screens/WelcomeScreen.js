@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { Container, Content, Text, Item, Input, Button, StyleProvider } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
 
 import layout from '../constants/Layout';
 import colors from '../constants/Colors';
@@ -9,7 +10,7 @@ import colors from '../constants/Colors';
 import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
 
-export default function WelcomeScreen(props) {
+function WelcomeScreen(props) {
 
   const start = () => {
     props.navigation.navigate('Main');
@@ -29,7 +30,7 @@ export default function WelcomeScreen(props) {
             </Row>
             <Row>
               <Col style={styles.mainCol}>
-                <Text style={styles.mainText}>Welcome, Emeka</Text>
+                <Text style={styles.mainText}>Welcome, {props.userDetails.firstName}</Text>
               </Col>
             </Row>
             <Row>
@@ -144,3 +145,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
 });
+
+const mapStateToProps = state => {
+  return { userDetails: state.userDetails, };
+};
+
+export default connect(mapStateToProps)(WelcomeScreen)

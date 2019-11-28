@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { Container, Content, Text, Item, Input, Button, StyleProvider, Toast } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
 
 import layout from '../constants/Layout';
 import colors from '../constants/Colors';
@@ -10,8 +11,9 @@ import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
 
 import firebase from '../services/firebase';
+import { setUserDetails } from '../redux/actions/actions';
 
-export default function LoginScreen(props) {
+function LoginScreen(props) {
   const db = firebase.firestore();
   const [isDisabled, setDisabled] = useState(true);
   const [isError, setError] = useState(false);
@@ -32,8 +34,8 @@ export default function LoginScreen(props) {
     const userRef = db.collection("drivers").doc(userPin);
     userRef.get().then(function(doc) {
       if (doc.exists) {
-          console.log("Document data:", doc.data());
-          //props.navigation.navigate('Welcome');
+          props.setUserDetails(doc.data()); // dispatch user details to redux store
+          props.navigation.navigate('Welcome');
       } else {
           // user account does not exist
           Toast.show({
@@ -230,3 +232,17 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
 });
+
+const mapStateToProps = state => {
+  return { userDetails: state.userDetails, };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setUserDetails: (user)	=> { // so I can access it with this.props.setUserDetails in the instance methods
+			return dispatch(setUserDetails(user));
+		},
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

@@ -14,4 +14,8 @@ export default {
   yellow: '#FFF200',
   gray: '#666666',
   lightGray: '#CCCCCC',
+  superLightGray: '#F6FCEF',
+  blueGray: '#898989',
+  pinkGray: '#FEF3F6',
+  actualBlue: '#334E6A'
 };

@@ -281,11 +281,11 @@ export default {
 
   // Tab
   tabBarDisabledTextColor: '#BDBDBD',
-  tabDefaultBg: platform === PLATFORM.IOS ? '#F8F8F8' : '#3F51B5',
-  topTabBarTextColor: platform === PLATFORM.IOS ? '#6b6b6b' : '#b3c7f9',
-  topTabBarActiveTextColor: platform === PLATFORM.IOS ? '#007aff' : '#fff',
-  topTabBarBorderColor: platform === PLATFORM.IOS ? '#a7a6ab' : '#fff',
-  topTabBarActiveBorderColor: platform === PLATFORM.IOS ? '#007aff' : '#fff',
+  tabDefaultBg: platform === PLATFORM.IOS ? 'white' : 'white',
+  topTabBarTextColor: platform === PLATFORM.IOS ? myColor.lightGray : myColor.lightGray,
+  topTabBarActiveTextColor: platform === PLATFORM.IOS ? myColor.gray : myColor.gray,
+  topTabBarBorderColor: platform === PLATFORM.IOS ? 'white' : 'white',
+  topTabBarActiveBorderColor: platform === PLATFORM.IOS ? myColor.gray : myColor.gray,
 
   // Tabs
   tabBgColor: '#F8F8F8',

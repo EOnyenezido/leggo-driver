@@ -4,6 +4,8 @@ import { Container, Content, Text, Button, StyleProvider,
   List, ListItem, Left, Thumbnail, Body, Right } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
+import TextAvatar from '../components/TextAvatar';
+
 import layout from '../constants/Layout';
 import colors from '../constants/Colors';
 
@@ -58,14 +60,20 @@ export default function OrdersScreen(props) {
                   {
                     orders.length > 0 ?
                     orders.map((order) => {
+                      const initials = order.sender.fullName[0].toUpperCase()+order.sender.fullName.split(' ')[1][0].toUpperCase();
                       return (
                         <ListItem avatar key={order.id}>
                           <Left>
-                            <Thumbnail source={ props.userDetails ? {uri: props.userDetails.profileImage} : require('../assets/images/profile_picture.png') } />
+                            <TextAvatar
+                             backgroundColor={colors.tintColor}
+                             textColor={'white'}
+                             size={60}
+                             type={'circle'} // optional
+                            >{initials}</TextAvatar>
                           </Left>
                           <Body>
                             <Text>{order.sender.fullName}</Text>
-                            <Text note>{order.pickup.description}</Text>
+                            <Text note>{order.pickup.description.padEnd(50, '.')}</Text>
                           </Body>
                           <Right>
                             <Text note>{new Date(order.createdAt).toLocaleTimeString()}</Text>

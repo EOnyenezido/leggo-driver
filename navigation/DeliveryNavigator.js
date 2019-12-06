@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation';
 import StackViewStyleInterpolator from 'react-navigation-stack/src/views/StackView/StackViewStyleInterpolator';
 
 import DeliveryScreen from '../screens/DeliveryScreen';
+import TrackScreen from '../screens/TrackScreen';
 
 const customAnimationFunc = () => ({
   screenInterpolator: sceneProps => {
@@ -24,6 +25,7 @@ const config = Platform.select({
 export default createStackNavigator(
   {
     Delivery: DeliveryScreen,
+    Track: TrackScreen,
   },
   config
 );

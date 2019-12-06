@@ -151,7 +151,7 @@ function DeliveryScreen(props) {
                 </Button>
               </Col>
               <Col style={styles.topCol}>
-                <Button iconLeft full dark bordered style={styles.topButton}>
+                <Button iconLeft full dark bordered onPress={() => props.navigation.navigate('Track', {order: order})} style={styles.topButton}>
                   <Icon ios='ios-locate' android="md-locate"/>
                   <Text>TRACK</Text>
                 </Button>

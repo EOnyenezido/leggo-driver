@@ -3,6 +3,10 @@ import { Image, StyleSheet, TouchableOpacity, View, ScrollView, Linking } from '
 import { Container, Content, Text, Button, StyleProvider, Card, CardItem, Item, Input, Spinner,
   List, ListItem, Left, Thumbnail, Body, Right, Icon, Tab, Tabs, TabHeading, Header, Toast } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import { useKeepAwake } from 'expo-keep-awake';
+import { connect } from 'react-redux';
 
 import layout from '../constants/Layout';
 import colors from '../constants/Colors';
@@ -11,8 +15,9 @@ import getTheme from '../native-base-theme/components';
 import platform from '../native-base-theme/variables/platform';
 
 import firebase from '../services/firebase';
+import { setWatchLocation } from '../redux/actions/actions';
 
-export default function DeliveryScreen(props) {
+function DeliveryScreen(props) {
   const [order, setOrder] = useState({});
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -20,6 +25,8 @@ export default function DeliveryScreen(props) {
   const db = firebase.firestore();
   const orderId = props.navigation.dangerouslyGetParent().getParam('id');
 
+  useKeepAwake();
+  
   useEffect(() => {
     const unsubscribe = db.collection("orders").doc(orderId)
     .onSnapshot(function(doc) {
@@ -33,9 +40,10 @@ export default function DeliveryScreen(props) {
     };
   }, [orderId]);
 
-  const updateDelivery = (stage, status) => {
+  const updateDelivery = async (stage, status) => {
     setLoading(true);
-    
+    props.watchLocation.remove();
+
     if(stage <= order.stage) {
       setLoading(false);
       return Toast.show({
@@ -44,6 +52,28 @@ export default function DeliveryScreen(props) {
         type: 'warning',
         duration: 5000
       })
+    }
+
+    // check for location permission and GPS availability
+    if (stage < 3 && stage >= order.stage)  {
+      let gps = await Location.hasServicesEnabledAsync();
+      if (!gps) {
+        return Toast.show({
+          text: 'Please enable your GPS location service to continue',
+          buttonText: 'Close',
+          type: 'danger',
+          duration: 5000
+        })
+      }
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if (status !== 'granted') {
+        return Toast.show({
+          text: 'Permission to access location was denied. Please allow permission',
+          buttonText: 'Close',
+          type: 'danger',
+          duration: 5000
+        })
+      }
     }
 
     if(stage === 4 && code !== order.deliveryConfirmationCode)  { // check delivery code
@@ -62,7 +92,7 @@ export default function DeliveryScreen(props) {
       stage: stage,
       status: status
     })
-    .then(() => {
+    .then(async () => {
       setLoading(false);
       setPage(stage);
       Toast.show({
@@ -71,6 +101,30 @@ export default function DeliveryScreen(props) {
         type: 'success',
         duration: 5000
       })
+
+      if (stage < 3 && stage >= order.stage)  {
+        // redundant but check anyway
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+          Toast.show({
+            text: 'Permission to access location was denied. Please allow permission',
+            buttonText: 'Close',
+            type: 'danger',
+            duration: 5000
+          })
+        } else  {
+          const options = {
+            accuracy: Location.Accuracy.BestForNavigation,
+            timeInterval: 1000,
+            distanceInterval: 0
+          }
+          const clearLocation = await Location.watchPositionAsync(options, (location) => {
+            db.collection("transit").doc(orderId)
+            .set(location);
+          });
+          props.setWatchLocation(clearLocation);
+        }
+      }
     })
     .catch((error) => {
       setLoading(false);
@@ -737,3 +791,17 @@ const styles = StyleSheet.create({
     width: layout.modifier.height(100)
   },
 });
+
+const mapStateToProps = state => {
+  return { watchLocation: state.watchLocation, };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setWatchLocation: (location)	=> { // so I can access it with this.props.setWatchLocation in the instance methods
+			return dispatch(setWatchLocation(location));
+		},
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeliveryScreen);

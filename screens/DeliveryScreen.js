@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
-import { Container, Content, Text, Button, StyleProvider, Card, CardItem, Item, Input,
-  List, ListItem, Left, Thumbnail, Body, Right, Icon, Tab, Tabs, TabHeading, Header } from 'native-base';
+import { Image, StyleSheet, TouchableOpacity, View, ScrollView, Linking } from 'react-native';
+import { Container, Content, Text, Button, StyleProvider, Card, CardItem, Item, Input, Spinner,
+  List, ListItem, Left, Thumbnail, Body, Right, Icon, Tab, Tabs, TabHeading, Header, Toast } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 import layout from '../constants/Layout';
@@ -15,8 +15,11 @@ import firebase from '../services/firebase';
 export default function DeliveryScreen(props) {
   const [order, setOrder] = useState({});
   const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [code, setCode] = useState('');
   const db = firebase.firestore();
   const orderId = props.navigation.dangerouslyGetParent().getParam('id');
+
   useEffect(() => {
     const unsubscribe = db.collection("orders").doc(orderId)
     .onSnapshot(function(doc) {
@@ -29,6 +32,56 @@ export default function DeliveryScreen(props) {
       unsubscribe();
     };
   }, [orderId]);
+
+  const updateDelivery = (stage, status) => {
+    setLoading(true);
+    
+    if(stage <= order.stage) {
+      setLoading(false);
+      return Toast.show({
+        text: `Delivery already at ${order.status.toUpperCase()} stage`,
+        buttonText: 'Close',
+        type: 'warning',
+        duration: 5000
+      })
+    }
+
+    if(stage === 4 && code !== order.deliveryConfirmationCode)  { // check delivery code
+      setLoading(false);
+      
+      return Toast.show({
+        text: 'Incorrect delivery code. Please confirm user\'s identity!',
+        buttonText: 'Close',
+        type: 'danger',
+        duration: 5000
+      })
+    }
+
+    db.collection("orders").doc(orderId)
+    .update({
+      stage: stage,
+      status: status
+    })
+    .then(() => {
+      setLoading(false);
+      setPage(stage);
+      Toast.show({
+        text: `Order ${status.toUpperCase()} successfully.`,
+        buttonText: 'Close',
+        type: 'success',
+        duration: 5000
+      })
+    })
+    .catch((error) => {
+      setLoading(false);
+      Toast.show({
+        text: error,
+        buttonText: 'Close',
+        type: 'danger',
+        duration: 5000
+      })
+    })
+  };
   
   return (
     <StyleProvider style={getTheme(platform)}>
@@ -50,7 +103,8 @@ export default function DeliveryScreen(props) {
                 </Button>
               </Col>
               <Col style={styles.topCol}>
-                <Button iconRight full dark bordered style={{...styles.topButton, borderBottomRightRadius: 45, borderTopRightRadius: 45}}>
+                <Button iconRight full dark bordered style={{...styles.topButton, borderBottomRightRadius: 45, borderTopRightRadius: 45}}
+                   onPress={() => Linking.openURL(`tel:${order.support}`)}>
                   <Text>SUPPORT</Text>
                   <Icon ios='ios-call' android="md-call"/>
                 </Button>
@@ -61,9 +115,10 @@ export default function DeliveryScreen(props) {
             </Row>
             <Row>
               <Col>
-                <Tabs page={page}>
+                <Tabs page={page > 3 ? 3 : page}>
                   <Tab heading={ <TabHeading style={styles.tabHeading}>
-                      <Image source={ require('../assets/images/source.png') } style={styles.sourceImage}/>
+                    <Image source={ order.stage >= 1 ? require('../assets/images/source1.png')
+                                : require('../assets/images/source.png')} style={styles.sourceImage}/>
                       <Text style={styles.tabText}>SOURCE</Text>
                     </TabHeading>}>
                     <Row>
@@ -128,7 +183,7 @@ export default function DeliveryScreen(props) {
                                   </Left>
                                   <Body style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Text style={styles.listText}>{order.sender && order.sender.phoneNumber}</Text>
-                                    <Button rounded style={styles.listButton}>
+                                    <Button rounded style={styles.listButton} onPress={() => Linking.openURL(`tel:${order.sender.phoneNumber}`)}>
                                       <Text>CALL NOW</Text>
                                     </Button>
                                   </Body>
@@ -179,7 +234,7 @@ export default function DeliveryScreen(props) {
                                   </Left>
                                   <Body style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Text style={styles.listText}>{order.receiver && order.receiver.phoneNumber}</Text>
-                                    <Button rounded style={styles.listButton}>
+                                    <Button rounded style={styles.listButton} onPress={() => Linking.openURL(`tel:${order.sender.phoneNumber}`)}>
                                       <Text>CALL NOW</Text>
                                     </Button>
                                   </Body>
@@ -192,15 +247,18 @@ export default function DeliveryScreen(props) {
                     </Row>
                     <Row>
                       <Col style={styles.buttonCol}>
-                        <Button onPress={() => setPage(1)}
+                        <Button disabled={loading} onPress={() => updateDelivery(1, 'started')}
                           rounded style={styles.buttonItem}>
-                          <Text style={styles.buttonText}>Start</Text>
+                          {
+                            loading ? <Spinner color='white' /> : <Text style={styles.buttonText}>Start</Text>
+                          }
                         </Button>
                       </Col>
                     </Row>
                   </Tab>
                   <Tab heading={ <TabHeading style={styles.tabHeading}>
-                      <Image source={ require('../assets/images/pickup_blank.png') } style={styles.sourceImage}/>
+                    <Image source={ order.stage >= 2 ? require('../assets/images/pickup.png')
+                                : require('../assets/images/pickup_blank.png')} style={styles.sourceImage}/>
                       <Text style={styles.tabText}>PICK UP</Text>
                     </TabHeading>}>
                     <View style={{justifyContent: 'flex-start'}}>
@@ -229,7 +287,8 @@ export default function DeliveryScreen(props) {
                         <Card>
                           <Row>
                             <Col style={styles.sourceLeft}>
-                              <Image source={ require('../assets/images/source.png') } style={styles.sourceImage}/>
+                              <Image source={ order.stage >= 1 ? require('../assets/images/source1.png')
+                                : require('../assets/images/source.png')} style={styles.sourceImage}/>
                               <Text style={styles.tabText}>SOURCE</Text>
                             </Col>
                             <Col>
@@ -284,7 +343,7 @@ export default function DeliveryScreen(props) {
                                   </Left>
                                   <Body style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Text style={styles.listText}>{order.sender && order.sender.phoneNumber}</Text>
-                                    <Button rounded style={styles.listButton}>
+                                    <Button rounded style={styles.listButton} onPress={() => Linking.openURL(`tel:${order.sender.phoneNumber}`)}>
                                       <Text>CALL NOW</Text>
                                     </Button>
                                   </Body>
@@ -297,16 +356,19 @@ export default function DeliveryScreen(props) {
                       </Row>
                       <Row>
                         <Col style={{...styles.buttonCol, marginTop: layout.modifier.height(330)}}>
-                        <Button
+                        <Button disabled={loading} onPress={() => updateDelivery(2, 'picked-up')}
                           rounded style={styles.buttonItem}>
-                          <Text style={styles.buttonText}>Pick Up</Text>
+                          {
+                            loading ? <Spinner color='white' /> : <Text style={styles.buttonText}>Pick Up</Text>
+                          }
                         </Button>
                       </Col>
                       </Row>
                     </View>
                   </Tab>
                   <Tab heading={ <TabHeading style={styles.tabHeading}>
-                      <Image source={ require('../assets/images/destination_blank.png') } style={styles.sourceImage}/>
+                    <Image source={ order.stage >= 3 ? require('../assets/images/destination.png')
+                                : require('../assets/images/destination_blank.png')} style={styles.sourceImage}/>
                       <Text style={styles.tabText}>DESTINATION</Text>
                     </TabHeading>}>
                     <Row>
@@ -334,7 +396,7 @@ export default function DeliveryScreen(props) {
                         <Card>
                           <Row>
                             <Col style={styles.sourceLeft}>
-                              <Image source={ require('../assets/images/source.png') } style={styles.sourceImage}/>
+                              <Image source={ require('../assets/images/source1.png') } style={styles.sourceImage}/>
                               <Text style={styles.tabText}>SOURCE</Text>
                             </Col>
                             <Col>
@@ -371,7 +433,7 @@ export default function DeliveryScreen(props) {
                                   </Left>
                                   <Body style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Text style={styles.listText}>{order.sender && order.sender.phoneNumber}</Text>
-                                    <Button rounded style={styles.listButton}>
+                                    <Button rounded style={styles.listButton} onPress={() => Linking.openURL(`tel:${order.sender.phoneNumber}`)}>
                                       <Text>CALL NOW</Text>
                                     </Button>
                                   </Body>
@@ -422,7 +484,7 @@ export default function DeliveryScreen(props) {
                                   </Left>
                                   <Body style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Text style={styles.listText}>{order.receiver && order.receiver.phoneNumber}</Text>
-                                    <Button rounded style={styles.listButton}>
+                                    <Button rounded style={styles.listButton} onPress={() => Linking.openURL(`tel:${order.sender.phoneNumber}`)}>
                                       <Text>CALL NOW</Text>
                                     </Button>
                                   </Body>
@@ -435,15 +497,18 @@ export default function DeliveryScreen(props) {
                     </Row>
                     <Row>
                       <Col style={styles.buttonCol}>
-                        <Button
+                        <Button disabled={loading} onPress={() => updateDelivery(3, 'delivered')}
                           rounded style={styles.buttonItem}>
-                          <Text style={styles.buttonText}>Deliver</Text>
+                          {
+                            loading ? <Spinner color='white' /> : <Text style={styles.buttonText}>Deliver</Text>
+                          }
                         </Button>
                       </Col>
                     </Row>
                   </Tab>
                   <Tab heading={ <TabHeading style={styles.tabHeading}>
-                      <Image source={ require('../assets/images/delivered_blank.png') } style={styles.sourceImage}/>
+                    <Image source={ order.stage >= 4 ? require('../assets/images/delivered.png')
+                                : require('../assets/images/delivered_blank.png')} style={styles.sourceImage}/>
                       <Text style={styles.tabText}>DELIVERED</Text>
                     </TabHeading>}>
                     <Row>
@@ -477,16 +542,19 @@ export default function DeliveryScreen(props) {
                           }}
                         /> */}
                         <Item style={styles.deliveryCodeItem}>
-                          <Input maxLength={6} style={styles.deliveryCodeItemText} placeholder="XXXXXX" />
+                          <Input maxLength={6} style={styles.deliveryCodeItemText} placeholder="XXXXXX"
+                            value={code} onChangeText={text => setCode(text)} autoCapitalize='characters'/>
                         </Item>
                         <Text style={styles.deliveryCode}>Delivery Code</Text>                        
                       </Col>
                     </Row>
                     <Row>
                       <Col style={styles.buttonCol}>
-                        <Button
+                        <Button disabled={loading} onPress={() => updateDelivery(4, 'completed')}
                           rounded style={styles.buttonItem}>
-                          <Text style={styles.buttonText}>Complete</Text>
+                          {
+                            loading ? <Spinner color='white' /> : <Text style={styles.buttonText}>Complete</Text>
+                          }
                         </Button>
                       </Col>
                     </Row>

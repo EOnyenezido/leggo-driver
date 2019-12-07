@@ -46,7 +46,7 @@ function TrackScreen(props) {
                   <MapViewDirections
                     origin={coordinates[0]}
                     destination={coordinates[1]}
-                    apikey='AIzaSyCFPgNjiK9D86JKJDd32FSyywMZwuPyHXw'
+                    apikey='xxxx'
                     strokeWidth={3}
                     strokeColor="hotpink"
                   />

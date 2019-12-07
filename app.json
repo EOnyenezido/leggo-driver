@@ -27,7 +27,12 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.zintech.leggo"
+      "package": "com.zintech.leggo",
+      "config": {
+        "googleMaps": {
+          "apiKey": "xxxx"
+        }
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, ProgressBarAndroid } from 'react-native';
 import { Container, Content, Text, Item, Input, Button, StyleProvider } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
 
 import layout from '../constants/Layout';
 import colors from '../constants/Colors';
@@ -11,13 +12,13 @@ import platform from '../native-base-theme/variables/platform';
 
 import firebase from '../services/firebase';
 
-export default function RatingScreen() {
+function RatingScreen(props) {
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);
   const [stars, setStars] = useState({5: 0, 4: 0, 3: 0, 2: 0, 1: 0});
   const db = firebase.firestore();
   useEffect(() => {
-    const unsubscribe = db.collection("reviews").where("driver", "==", "1816")
+    const unsubscribe = db.collection("reviews").where("driver", "==", props.userDetails.id)
     .onSnapshot(function(querySnapshot) { 
       let newOrders = [];       
       querySnapshot.forEach(function(doc) {
@@ -29,7 +30,7 @@ export default function RatingScreen() {
         normalizedStars[item.stars]+=1;
         return total + item.stars;
       }, 0);
-      setRating((total/newOrders.length).toFixed(2));
+      total > 0 ? setRating((total/newOrders.length).toFixed(2)) : null;
       setStars(normalizedStars);
     });
 
@@ -295,3 +296,9 @@ const styles = StyleSheet.create({
     width: layout.modifier.height(100)
   },
 });
+
+const mapStateToProps = state => {
+  return { userDetails: state.userDetails, };
+};
+
+export default connect(mapStateToProps)(RatingScreen);

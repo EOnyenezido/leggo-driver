@@ -3,6 +3,7 @@ import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Container, Content, Text, Button, StyleProvider,
   List, ListItem, Left, Thumbnail, Body, Right } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
+import { connect } from 'react-redux';
 
 import TextAvatar from '../components/TextAvatar';
 
@@ -15,11 +16,12 @@ import platform from '../native-base-theme/variables/platform';
 import firebase from '../services/firebase';
 
 
-export default function OrdersScreen(props) {
+function OrdersScreen(props) {
   const [orders, setOrders] = useState([]);
   const db = firebase.firestore();
   useEffect(() => {
-    const unsubscribe = db.collection("orders").where("assignedTo", "==", "1816")
+    const unsubscribe = db.collection("orders").where("assignedTo", "==", props.userDetails.id)
+    .where("stage", "<", 4)
     .onSnapshot(function(querySnapshot) { 
       let newOrders = [];       
       querySnapshot.forEach(function(doc) {
@@ -192,3 +194,9 @@ const styles = StyleSheet.create({
     width: layout.modifier.height(100)
   },
 });
+
+const mapStateToProps = state => {
+  return { userDetails: state.userDetails, };
+};
+
+export default connect(mapStateToProps)(OrdersScreen);

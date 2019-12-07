@@ -155,4 +155,4 @@ const mapStateToProps = state => {
   return { userDetails: state.userDetails, };
 };
 
-export default connect(mapStateToProps)(TrackScreen)
+export default connect(mapStateToProps)(TrackScreen);

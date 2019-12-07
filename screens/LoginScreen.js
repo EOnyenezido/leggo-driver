@@ -34,7 +34,7 @@ function LoginScreen(props) {
     const userRef = db.collection("drivers").doc(userPin);
     userRef.get().then(function(doc) {
       if (doc.exists) {
-          props.setUserDetails(doc.data()); // dispatch user details to redux store
+          props.setUserDetails({id: doc.id, ...doc.data()}); // dispatch user details to redux store
           props.navigation.navigate('Welcome');
       } else {
           // user account does not exist
